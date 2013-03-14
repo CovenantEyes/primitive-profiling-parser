@@ -33,7 +33,7 @@ entryToString (Entry name_ sum_ count_) =
                     (show $ average sum_ count_)
                     ('x' : show count_)
                     ('=' : show sum_)
-    where average s c = realToFrac sum_ / fromIntegral count_
+    where average s c = realToFrac s / fromIntegral c
 
 -- Takes a key-value pair and transforms it into an entry. The key is the entry's name and the
 -- value is a list of times that all correspond to that entry.
