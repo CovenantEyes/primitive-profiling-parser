@@ -14,6 +14,10 @@ When you have such a file, run `p3` like this:
 
     ./p3 <filename>
 
+or like this:
+
+    cat <filename> | ./p3
+
 and you will get the average time spent for each unique entity along with some other information.
 
 
