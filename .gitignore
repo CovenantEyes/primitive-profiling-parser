@@ -1,3 +1,2 @@
-*.exe
-*.hi
-*.o
+*cabal?sandbox*
+/dist
