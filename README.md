@@ -1,5 +1,5 @@
 P3 Overview
-============
+===========
 
 The **Primitive Profiling Parser** (or *P3*) is a tiny tool to calculate averages from the
 file-based output of a hand-rolled profiler.
@@ -12,11 +12,11 @@ column must contain a decimal number representing how long the identified entity
 
 When you have such a file, run `p3` like this:
 
-    ./p3 <filename>
+    $ p3 <filename>
 
 or like this:
 
-    cat <filename> | ./p3
+    $ cat <filename> | p3
 
 and you will get the average time spent for each unique entity along with some other information.
 
@@ -41,7 +41,7 @@ Let's say your program keeps appending to a file called `data.txt`. A small cros
 
 where the first column is some unique name and the second is the time spent for that entity.
 
-Running `./p3 data.txt` will give you something like this to `stdout`:
+Running `p3 data.txt` will give you something like this to `stdout`:
 
     ID                                                AVERAGE                  COUNT           SUM
     getMaxIdFromQueryResult                           5.687253886010365e-3     x193            =1.0976400000000004
@@ -61,4 +61,4 @@ Building
 
 To build, run the following:
 
-    ghc -O2 --make p3.hs
+    $ cabal build
