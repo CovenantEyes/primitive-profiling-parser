@@ -1,11 +1,13 @@
-import System.Environment (getArgs)
-import Data.Char (isSpace)
-import Data.Functor ((<$>))
-import Data.List (partition, foldl')
-import Data.Text (Text)
+import           System.Environment (getArgs)
+import           Data.Char (isSpace)
+import           Data.Functor ((<$>))
+import           Data.List (partition, foldl')
+import           Data.Maybe (mapMaybe)
+import           Data.Text (Text)
 import qualified Data.Text as T
 import qualified Data.Text.IO as Tio
 
+delim :: Char
 delim = '\t'
 
 -- An Entry describes the average and count of all input lines identified by `entryName`
@@ -23,11 +25,9 @@ main = do
 
 -- The meat of the program: takes input data and returns stats as Text
 process :: Text -> Text
-process contents = let xs = lineToPair <$> filter nonempty (T.lines contents)
+process contents = let xs = lineToPair `mapMaybe` T.lines contents
                     in T.pack $ unlines (entryToString <$> entries xs)
-    where
-        entries xs = map pairToEntry (combine xs)
-        nonempty x = not (T.null x || T.all isSpace x)
+    where entries xs = pairToEntry <$> combine xs
 
 -- Takes four strings and places them in columns of varying widths for display purposes.
 columnizeFields :: String -> String -> String -> String -> String
@@ -49,10 +49,12 @@ pairToEntry :: (Text, [Double]) -> Entry
 pairToEntry (key, vs) = Entry key sum_ count_ where (sum_, count_) = sumAndCount vs
 
 -- Parses a line from the input file and returns the two columns as a tuple.
-lineToPair :: Text -> (Text, Double)
-lineToPair str = (T.strip key, double)
+lineToPair :: Text -> Maybe (Text, Double)
+lineToPair str = if empty key || empty value
+                   then Nothing
+                   else Just $ (T.strip key, asDouble value)
     where (key, value) = T.span (/= delim) str
-          double = read (T.unpack (T.strip value))
+          asDouble x = read (T.unpack (T.strip x))
 
 -- Takes a list of key-value pairs and, for each unique key in the list, aggregates all its values.
 combine :: (Eq k) => [(k,v)] -> [(k,[v])]
@@ -66,3 +68,7 @@ combine ((k,v):xs) = (k, v:values) : (combine nonmatching)
 -- method was chosen after the simpler way was too slow and memory-intensive on large input files.
 sumAndCount :: (Real a, Integral c) => [a] -> (a, c)
 sumAndCount xs = foldl' step (0, 0) xs where step (s, c) n = (s+n, c+1)
+
+-- Determines if a string is empty.
+empty :: Text -> Bool
+empty x = T.null x || T.all isSpace x
